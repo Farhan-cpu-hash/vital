@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitalLink | Advanced Health Monitoring System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0284c7;
+            --secondary: #0c0d23;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            width: 100%;
+        }
+
+        header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-tab {
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .nav-tab:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-tab.active {
+            color: white;
+            background: var(--primary);
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .form-input {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .btn-danger {
+            background: rgba(244, 63, 94, 0.1);
+            color: var(--accent);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Status Indicators */
+        .status-display {
+            text-align: center;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .status-ok {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-danger {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            color: var(--accent);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(244, 63, 94, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(244, 63, 94, 0);
+            }
+        }
+
+        .vital-metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Admin Dashboard */
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01));
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+            color: var(--primary);
+        }
+
+        .alert-item {
+            background: rgba(244, 63, 94, 0.05);
+            border-left: 4px solid var(--accent);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .contact-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            padding: 16px 24px;
+            border-radius: 8px;
+            margin-top: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container nav-content">
+            <div class="logo"><i class="fa-solid fa-heart-pulse"></i> VitalLink</div>
+            <div class="nav-tabs">
+                <div class="nav-tab active" onclick="switchTab(this, 'user')">User Interface</div>
+                <div class="nav-tab" onclick="switchTab(this, 'admin')">Admin Dashboard</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- USER INTERFACE -->
+        <section id="user-view" class="view-section active">
+            <div class="grid-layout">
+
+                <!-- Vitals Input -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-activity"></i> Vitals Input</div>
+                        <button class="btn btn-outline" style="width: auto; padding: 5px 10px;"
+                            onclick="simulateBand()">
+                            <i class="fa-solid fa-watch-fitness"></i> Fetch from Band
+                        </button>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Heart Rate (BPM)</label>
+                        <input type="number" id="hr-input" class="form-input" value="72" placeholder="60-100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">SpO2 (%)</label>
+                        <input type="number" id="spo2-input" class="form-input" value="98" placeholder="95-100">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Temperature (°C)</label>
+                        <input type="number" id="temp-input" class="form-input" value="36.6" placeholder="36.5-37.5">
+                    </div>
+
+                    <button class="btn btn-primary" onclick="analyzeVitals()">
+                        Analyze Vitals & Check Status
+                    </button>
+                </div>
+
+                <!-- Status Display -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-shield-heart"></i> Real-time Status</div>
+                    </div>
+                    <div id="status-box" class="status-display status-ok">
+                        <i class="fa-solid fa-check-circle" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                        <h2>User is OK</h2>
+                        <p>All vitals are within normal range.</p>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <div class="vital-metric">
+                            <span>Last Check:</span>
+                            <span id="last-check-time">--:--</span>
+                        </div>
+                        <div class="vital-metric">
+                            <span>Location:</span>
+                            <span id="location-status">Detecting...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Emergency Contacts -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-address-book"></i> Emergency Contacts</div>
+                        <button class="btn btn-outline" style="width: auto;" onclick="addContactPrompt()">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                    <div id="contacts-list">
+                        <!-- Contacts injected here -->
+                    </div>
+                    <p class="form-label" style="margin-top: 10px; font-size: 0.8rem;">* Priority order: 1, 2, 3</p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ADMIN DASHBOARD -->
+        <section id="admin-view" class="view-section">
+            <div class="grid-layout">
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--accent);" id="total-alerts">0</div>
+                    <div class="form-label">Total SOS Alerts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color: var(--success);" id="active-users">1</div>
+                    <div class="form-label">Active Users</div>
+                </div>
+
+                <!-- Alert Feed -->
+                <div class="card" style="grid-column: span 2;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-bell"></i> Live Alert Feed</div>
+                        <span class="form-label">Real-time updates</span>
+                    </div>
+                    <div id="alert-feed" style="max-height: 400px; overflow-y: auto;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 20px;">
+                            No active alerts. System monitoring...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ROLE SELECTION MODAL -->
+    <div id="role-modal"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); z-index: 2000; display: flex; justify-content: center; align-items: center;">
+        <div class="card" style="width: 400px; text-align: center; border: 1px solid var(--primary);">
+            <div style="font-size: 3rem; margin-bottom: 20px; color: var(--primary);">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2 style="margin-bottom: 10px;">Welcome to VitalLink</h2>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Please select your role to continue</p>
+
+            <div style="display: grid; gap: 15px;">
+                <button class="btn btn-outline" onclick="selectRole('user')">
+                    <i class="fa-solid fa-user"></i> I am a User
+                </button>
+                <button class="btn btn-primary" onclick="selectRole('admin')">
+                    <i class="fa-solid fa-user-shield"></i> I am an Admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // --- STATE MANAGEMENT ---
+        // Load from localStorage or use default
+        const savedState = localStorage.getItem('vitalLinkState');
+        const state = savedState ? JSON.parse(savedState) : {
+            contacts: [
+                { name: "Dr. Smith", phone: "+1234567890", relation: "Doctor" },
+                { name: "Mom", phone: "+0987654321", relation: "Family" }
+            ],
+            alerts: [],
+            location: { lat: null, lon: null, address: "Unknown" },
+            currentUserRole: null
+        };
+
+        // Helper to save state
+        function saveState() {
+            localStorage.setItem('vitalLinkState', JSON.stringify(state));
+        }
+
+        // --- CROSS-TAB SYNCHRONIZATION ---
+        // Listen for changes in other tabs (e.g. User triggers SOS, Admin sees it)
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'vitalLinkState') {
+                const newState = JSON.parse(e.newValue);
+                // Merge relevant data
+                state.contacts = newState.contacts;
+                state.alerts = newState.alerts;
+                // Update UI if needed
+                if (state.currentUserRole === 'admin') {
+                    updateAdminDashboard();
+                }
+                renderContacts(); // Update contacts list for everyone
+            }
+        });
+
+        // --- INITIALIZATION ---
+        window.onload = () => {
+            // Hide main content initially
+            document.querySelector('header').style.display = 'none';
+            document.querySelector('main').style.display = 'none';
+        };
+
+        // --- ROLE MANAGEMENT ---
+        function selectRole(role) {
+            if (role === 'admin') {
+                const password = prompt("Enter Admin Password:");
+                if (password === '@123') {
+                    state.currentUserRole = 'admin';
+                    initializeView('admin');
+                    showToast("Welcome, Admin!", "success");
+                } else {
+                    showToast("Incorrect Password!", "danger");
+                }
+            } else {
+                state.currentUserRole = 'user';
+                initializeView('user');
+                showToast("Welcome, User!", "success");
+            }
+        }
+
+        function initializeView(role) {
+            document.getElementById('role-modal').style.display = 'none';
+            document.querySelector('header').style.display = 'block';
+            document.querySelector('main').style.display = 'block';
+
+            // Initialize common elements
+            renderContacts();
+            getLocation();
+            updateTime();
+
+            // Show appropriate tab based on role
+            if (role === 'admin') {
+                const adminTab = document.querySelector('.nav-tab[onclick*="admin"]');
+                switchTab(adminTab, 'admin');
+                updateAdminDashboard(); // Ensure dashboard is fresh
+            } else {
+                document.querySelector('.nav-tab[onclick*="admin"]').style.display = 'none';
+                const userTab = document.querySelector('.nav-tab[onclick*="user"]');
+                switchTab(userTab, 'user');
+            }
+        }
+
+        function switchTab(element, tab) {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+
+            element.classList.add('active');
+            document.getElementById(`${tab}-view`).classList.add('active');
+        }
+
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('last-check-time').innerText = now.toLocaleTimeString();
+        }
+
+        // --- LOCATION ---
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        state.location.lat = position.coords.latitude;
+                        state.location.lon = position.coords.longitude;
+                        state.location.address = "123 Main St, New York (Simulated)";
+                        document.getElementById('location-status').innerHTML = '<i class="fa-solid fa-location-arrow"></i> GPS Active';
+                        document.getElementById('location-status').style.color = "var(--success)";
+                    },
+                    (error) => {
+                        document.getElementById('location-status').innerText = "⚠️ GPS Failed";
+                    }
+                );
+            }
+        }
+
+        // --- VITALS LOGIC ---
+        function simulateBand() {
+            const btn = document.querySelector('button[onclick="simulateBand()"]');
+            const originalText = btn.innerHTML;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Syncing...';
+
+            showToast("Connecting to OnePlus Band...", "info");
+
+            setTimeout(() => {
+                // Generate random vitals (sometimes abnormal for demo)
+                // 30% chance of abnormal heart rate
+                const isAbnormal = Math.random() < 0.3;
+
+                if (isAbnormal) {
+                    document.getElementById('hr-input').value = Math.floor(Math.random() * (150 - 110) + 110); // High HR
+                } else {
+                    document.getElementById('hr-input').value = Math.floor(Math.random() * (100 - 60) + 60); // Normal HR
+                }
+
+                document.getElementById('spo2-input').value = Math.floor(Math.random() * (100 - 90) + 90);
+                document.getElementById('temp-input').value = (Math.random() * (37.5 - 36) + 36).toFixed(1);
+
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                showToast("Data fetched successfully!", "success");
+
+                // AUTOMATION: Automatically analyze after fetching
+                analyzeVitals();
+
+            }, 1500);
+        }
+
+        function analyzeVitals() {
+            const hr = parseFloat(document.getElementById('hr-input').value);
+            const spo2 = parseFloat(document.getElementById('spo2-input').value);
+            const temp = parseFloat(document.getElementById('temp-input').value);
+
+            let isAbnormal = false;
+            let reasons = [];
+            let cause = "Unknown";
+            let suggestion = "Consult a doctor immediately.";
+
+            // Logic for Cause & Suggestion
+            if (hr > 100) {
+                isAbnormal = true;
+                reasons.push(`High HR: ${hr} bpm`);
+                cause = "Stress, Anxiety, or Physical Exertion";
+                suggestion = "Rest, drink water, and take deep breaths.";
+            } else if (hr < 60) {
+                isAbnormal = true;
+                reasons.push(`Low HR: ${hr} bpm`);
+                cause = "Fatigue or Heart Condition";
+                suggestion = "Sit down and rest. Seek medical help if dizzy.";
+            }
+
+            if (spo2 < 95) {
+                isAbnormal = true;
+                reasons.push(`Low SpO2: ${spo2}%`);
+                cause = "Respiratory Issue or Altitude";
+                suggestion = "Sit upright, take deep breaths. Use oxygen if available.";
+            }
+
+            if (temp > 37.5) {
+                isAbnormal = true;
+                reasons.push(`Fever: ${temp}°C`);
+                cause = "Infection or Heat Stroke";
+                suggestion = "Stay hydrated, rest in a cool place, take paracetamol.";
+            }
+
+            updateTime();
+
+            if (isAbnormal) {
+                triggerSOS(reasons, cause, suggestion);
+            } else {
+                setNormalStatus();
+            }
+        }
+
+        function setNormalStatus() {
+            const box = document.getElementById('status-box');
+            box.className = 'status-display status-ok';
+            box.innerHTML = `
+                <i class="fa-solid fa-check-circle" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                <h2>User is OK</h2>
+                <p>All vitals are within normal range.</p>
+            `;
+        }
+
+        function triggerSOS(reasons, cause, suggestion) {
+            const box = document.getElementById('status-box');
+            box.className = 'status-display status-danger';
+            box.innerHTML = `
+                <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                <h2>SOS GENERATED</h2>
+                <p><strong>Issues:</strong> ${reasons.join(', ')}</p>
+                <div style="margin-top: 15px; text-align: left; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px;">
+                    <p style="margin-bottom: 5px;"><strong>🔍 Possible Cause:</strong> ${cause}</p>
+                    <p><strong>💡 Suggestion:</strong> ${suggestion}</p>
+                </div>
+                <p style="margin-top:10px; font-size:0.9rem;">Sending SMS Alerts...</p>
+            `;
+
+            // Create Alert Object
+            const newAlert = {
+                id: Date.now().toString().slice(-4),
+                timestamp: new Date().toLocaleTimeString(),
+                reasons: reasons,
+                cause: cause,
+                suggestion: suggestion,
+                location: state.location
+            };
+            state.alerts.unshift(newAlert);
+            saveState(); // SAVE TO STORAGE
+
+            // Update Admin Dashboard (if in same window)
+            updateAdminDashboard();
+
+            // --- REAL MODE SENDING (SMS ONLY) ---
+            state.contacts.forEach((contact, index) => {
+                setTimeout(() => {
+                    showToast(`Preparing SMS for ${contact.name}...`, "warning");
+                }, index * 2000 + 1000);
+            });
+
+            // Add a manual "Send SMS" button (Simpler, no WhatsApp)
+            const message = encodeURIComponent(
+                `🚨 SOS! Help Needed!\n\n` +
+                `Issues: ${reasons.join(', ')}\n` +
+                `Cause: ${cause}\n` +
+                `Location: https://www.google.com/maps?q=${state.location.lat},${state.location.lon}`
+            );
+
+            box.innerHTML += `
+                <div style="margin-top: 15px; display: flex; gap: 10px; justify-content: center;">
+                    <a href="sms:?body=${message}" class="btn btn-primary" style="width: auto; text-decoration: none;">
+                        <i class="fa-solid fa-comment-sms"></i> Send SMS Now
+                    </a>
+                </div>
+                <p style="font-size: 0.8rem; margin-top: 10px; color: var(--text-muted);">
+                    *Click "Send SMS Now" to open your messaging app.
+                </p>
+            `;
+        }
+
+        // --- ADMIN DASHBOARD ---
+        function updateAdminDashboard() {
+            document.getElementById('total-alerts').innerText = state.alerts.length;
+
+            const feed = document.getElementById('alert-feed');
+            if (state.alerts.length === 0) {
+                feed.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 20px;">No active alerts. System monitoring...</div>';
+                return;
+            }
+
+            feed.innerHTML = state.alerts.map(alert => `
+                <div class="alert-item">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <strong>🚨 SOS Alert #${alert.id}</strong>
+                        <span style="font-size:0.8rem; color:var(--text-muted);">${alert.timestamp}</span>
+                    </div>
+                    <div><strong>Issues:</strong> ${alert.reasons.join(', ')}</div>
+                    <div style="margin-top:5px; font-size: 0.9rem;"><strong>Cause:</strong> ${alert.cause || 'Unknown'}</div>
+                    <div style="margin-top:5px; font-size: 0.9rem; color: var(--success);"><strong>Suggestion:</strong> ${alert.suggestion || 'None'}</div>
+                    <div style="font-size:0.8rem; margin-top:10px; color:var(--text-muted);">
+                        <i class="fa-solid fa-location-dot"></i> 
+                        <a href="https://www.google.com/maps?q=${alert.location.lat},${alert.location.lon}" target="_blank" style="color: var(--primary);">
+                            View Location on Maps
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // --- CONTACTS ---
+        function renderContacts() {
+            const list = document.getElementById('contacts-list');
+            list.innerHTML = state.contacts.map((c, i) => `
+                <div class="contact-item">
+                    <div>
+                        <div style="font-weight:500;">${c.name} <span style="font-size:0.8rem; color:var(--primary);">(${c.relation})</span></div>
+                        <div style="font-size:0.8rem; color:var(--text-muted);">${c.phone}</div>
+                    </div>
+                    <button class="btn-outline" style="width:auto; padding:5px;" onclick="removeContact(${i})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addContactPrompt() {
+            const name = prompt("Enter Name:");
+            if (!name) return;
+            const phone = prompt("Enter Phone:");
+            const relation = prompt("Enter Relation:");
+
+            state.contacts.push({ name, phone, relation });
+            saveState(); // SAVE TO STORAGE
+            renderContacts();
+            showToast("Contact added successfully", "success");
+        }
+
+        function removeContact(index) {
+            if (confirm("Remove this contact?")) {
+                state.contacts.splice(index, 1);
+                saveState(); // SAVE TO STORAGE
+                renderContacts();
+            }
+        }
+
+        // --- UTILS ---
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+
+            let color = 'var(--primary)';
+            if (type === 'success') color = 'var(--success)';
+            if (type === 'danger') color = 'var(--accent)';
+
+            toast.style.borderLeft = `4px solid ${color}`;
+            toast.innerHTML = `
+                <i class="fa-solid ${type === 'success' ? 'fa-check' : (type === 'danger' ? 'fa-triangle-exclamation' : 'fa-info-circle')}" 
+                   style="color: ${color}"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
